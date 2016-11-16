@@ -27,6 +27,8 @@
     "all_frames" : true
   }],
   "web_accessible_resources": [
+    "assets/options.html",
+    "assets/csseditor.html",
     "assets/css/jsonview.css",
     "assets/css/jsonview-core.css",
     "assets/css/content_error.css",
