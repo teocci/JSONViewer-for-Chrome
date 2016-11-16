@@ -1,0 +1,75 @@
+body {
+	background-color: #EEE;
+	font-size: 10pt;
+}
+
+body > div {
+	position: relative;
+	margin: 0px auto;
+	width: 400px;
+	font-family: sans-serif;
+	background-color: white;
+	border: 1px solid #D2DBED;
+	font-family: Arial, sans-serif;
+	font-size: 13px;
+	-webkit-box-shadow: #888 2px 2px 2px;
+}
+
+body > div > div {
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+.optionBlock {
+	overflow: hidden;
+	height: 30px;
+	position: relative;
+}
+
+h2 {
+	font-size: 17px;
+	font-weight: bold;
+	margin-bottom: 20px;
+}
+
+label {
+	position: absolute;
+	top: 2px;
+	display: inline-block;
+}
+
+input[type="checkbox"] {
+	position: absolute;
+	right: 0px;
+	width: auto;
+	margin-left: 15px;
+	margin-bottom: 5px;
+	margin-top: 5px;
+	width: auto;
+}
+
+button {
+	position: absolute;
+	top: -4px;
+	right: 0px;
+	background-color: #F3F3F3;
+	-webkit-border-radius: 3px;
+	right: 0px;
+}
+
+#main {
+	border-radius: 5px;
+}
+
+#icon {
+	width: 25px;
+	padding-right: 10px;
+	vertical-align: bottom;
+}
+
+p {
+	margin-top: 5px;
+	font-style: italic;
+	text-align: justify;
+	color: gray;
+}

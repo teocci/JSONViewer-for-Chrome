@@ -1,0 +1,42 @@
+{
+  "manifest_version": 2,
+
+  "name": "JSONView",
+  "icons": {
+    "16": "assets/jsonview16.png",
+    "48": "assets/jsonview48.png",
+    "128": "assets/jsonview128.png"
+  },
+  "version": "0.0.32.2",
+  "description": "Validate and view JSON documents",
+  "options_page": "options.html",
+  "background" : {
+    "scripts": ["background.js"]
+  },
+  "content_scripts": [{
+	  "matches": [
+      "http://*/*", 
+      "https://*/*", 
+      "ftp://*/*", 
+      "file:///*"
+    ],
+	  "js": ["content.js"],
+	  "run_at" : "document_end",
+	  "all_frames" : true
+  }],
+  "web_accessible_resources": [
+    "assets/jsonview.css",
+    "assets/jsonview-core.css",
+    "assets/content_error.css",
+    "assets/options.png",
+    "assets/close_icon.gif",
+    "assets/error.gif"
+  ],
+  "permissions": [
+    "clipboardWrite", 
+    "http://*/", 
+    "contextMenus", 
+    "https://*/", 
+    "ftp://*/"
+  ]
+}
