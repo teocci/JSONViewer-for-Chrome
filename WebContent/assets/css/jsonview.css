@@ -28,10 +28,12 @@ body {
 }
 
 .collapser:after {
+  font-size: 13px;
   content: "-";
 }
 
 .collapsed > .collapser:after {
+  font-size: 13px;
   content: "+";
 }
 

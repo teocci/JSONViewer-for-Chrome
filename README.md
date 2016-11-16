@@ -1,6 +1,6 @@
-# JSONView-for-Chrome
+# JSONViewer-for-Chrome
 
-JSONView-for-Chrome is a Chrome extension for printing JSON nicely when you visit it 'directly' in a browser tab. This allows you to a view JSON string in a tree format. Also, you can open/close sections for better visibility.
+JSONViewer-for-Chrome is a Chrome extension for printing JSON nicely when you visit it 'directly' in a browser tab. This allows you to a view JSON string in a tree format. Also, you can open/close sections for better visibility.
 
 This a working version of [JSONView-for-Chrome](https://github.com/gildas-lormeau/JSONView-for-Chrome).
 It just includes a prefix to avoid a [JSON vulnerability](http://haacked.com/archive/2008/11/20/anatomy-of-a-subtle-json-vulnerability.aspx).

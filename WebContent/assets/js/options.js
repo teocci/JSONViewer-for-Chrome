@@ -18,7 +18,7 @@ function initOptions() {
 		bgPage.refreshMenuEntry();
 	});
 	document.getElementById("open-editor").addEventListener("click", function() {
-		location.href = "csseditor.html";
+		location.href = "../csseditor.html";
 	}, false);
 }
 

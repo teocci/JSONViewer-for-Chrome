@@ -1,36 +1,38 @@
 {
   "manifest_version": 2,
 
-  "name": "JSONView",
+  "name": "JSON Viewer",
+  "short_name": "JSONViewer",
+  "version": "0.7.0",
+  "description": "Validates and makes JSON documents easy to read. Open source.",
+  "homepage_url": "https://github.com/teocci/JSONView-for-Chrome",
+  "minimum_chrome_version": "21",
   "icons": {
-    "16": "assets/jsonview16.png",
-    "48": "assets/jsonview48.png",
-    "128": "assets/jsonview128.png"
+    "16": "assets/images/jsonview16.png",
+    "48": "assets/images/jsonview48.png",
+    "128": "assets/images/jsonview128.png"
   },
-  "version": "0.0.32.2",
-  "description": "Validate and view JSON documents",
-  "options_page": "options.html",
   "background" : {
     "scripts": ["background.js"]
   },
   "content_scripts": [{
-	  "matches": [
+    "matches": [
       "http://*/*", 
       "https://*/*", 
       "ftp://*/*", 
       "file:///*"
     ],
-	  "js": ["content.js"],
-	  "run_at" : "document_end",
-	  "all_frames" : true
+    "js": ["content.js"],
+    "run_at" : "document_end",
+    "all_frames" : true
   }],
   "web_accessible_resources": [
-    "assets/jsonview.css",
-    "assets/jsonview-core.css",
-    "assets/content_error.css",
-    "assets/options.png",
-    "assets/close_icon.gif",
-    "assets/error.gif"
+    "assets/css/jsonview.css",
+    "assets/css/jsonview-core.css",
+    "assets/css/content_error.css",
+    "assets/images/options.png",
+    "assets/images/close_icon.gif",
+    "assets/images/error.gif"
   ],
   "permissions": [
     "clipboardWrite", 
