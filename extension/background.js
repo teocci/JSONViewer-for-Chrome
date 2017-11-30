@@ -1,4 +1,8 @@
-var path, value, copyPathMenuEntryId, copyValueMenuEntryId;
+var path,
+    value,
+    copyPathMenuEntryId,
+    copyValueMenuEntryId,
+    rawData;
 
 function getDefaultTheme(callback) {
     var xhr = new XMLHttpRequest();
@@ -53,6 +57,15 @@ function refreshMenuEntry() {
     }
 }
 
+function getRawDataURL() {
+    chrome.runtime.onConnect.addListener(function (port) {
+        port.postMessage({
+            loadRawData: true,
+            rawData: rawData
+        });
+    });
+}
+
 function init() {
     chrome.runtime.onConnect.addListener(function (port) {
         port.onMessage.addListener(function (msg) {
@@ -89,15 +102,19 @@ function init() {
                 }
             }
 
-            if (msg.init)
+            if (msg.init) {
+                rawData = msg.rawData;
                 port.postMessage({
                     onInit: true,
                     options: localStorage.options ? JSON.parse(localStorage.options) : {}
                 });
+            }
+
             if (msg.copyPropertyPath) {
                 path = msg.path;
                 value = msg.value;
             }
+
             if (msg.jsonToHTML) {
                 workerFormatter = new Worker('js/workerFormatter.js');
                 workerFormatter.addEventListener('message', onWorkerFormatterMessage, false);

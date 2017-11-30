@@ -1,8 +1,8 @@
 var port = chrome.runtime.connect(),
     collapsers,
     options,
-    jsonObject,
-    errorLocs = [];
+    jsonObject;
+errorLocs = [];
 
 function displayError(error, loc, offset) {
     var locKey = loc.first_column + ';' +
@@ -127,10 +127,9 @@ function displayUI(theme, html) {
     expandElement.addEventListener('click', onExpand, false);
     reduceElement.addEventListener('click', onReduce, false);
 
-
     viewSourceElement.addEventListener('click', onViewSource, false);
+    optionsElement.addEventListener('click', onOptions, false);
 
-    optionsElement.addEventListener('click', openNewContent('assets/options.html'), false);
     copyPathElement.addEventListener(
         'click',
         function () {
@@ -143,76 +142,6 @@ function displayUI(theme, html) {
     );
 }
 
-function openNewContent(contentPath) {
-    window.open(chrome.runtime.getURL());
-}
-
-
-function extractData(rawText) {
-    var tokens, text = rawText.trim();
-
-    function test(text) {
-        return ((text.charAt(0) == '[' && text.charAt(text.length - 1) == ']') ||
-        (text.charAt(0) == '{' && text.charAt(text.length - 1) == '}'));
-    }
-
-    if (test(text)) {
-        return {
-            text: rawText,
-            offset: 0
-        };
-    }
-    tokens = text.match(/^([^\s\(]*)\s*\(([\s\S]*)\)\s*;?$/);
-    if (tokens && tokens[1] && tokens[2]) {
-        if (test(tokens[2].trim())) {
-            return {
-                fnName: tokens[1],
-                text: tokens[2],
-                offset: rawText.indexOf(tokens[2])
-            };
-        }
-    }
-}
-
-function processData(data) {
-    var xhr, jsonText;
-
-    function formatToHTML(fnName, offset) {
-        if (!jsonText) return;
-
-        port.postMessage({
-            jsonToHTML: true,
-            json: jsonText,
-            fnName: fnName,
-            offset: offset
-        });
-        try {
-            jsonObject = JSON.parse(jsonText);
-        } catch (e) {
-        }
-    }
-
-    if (window == top || options.injectInFrame) {
-        if (options.safeMethod) {
-            xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function () {
-                if (this.readyState == 4) {
-                    data = extractData(this.responseText);
-                    if (data) {
-                        jsonText = data.text;
-                        formatToHTML(data.fnName, data.offset);
-                    }
-                }
-            };
-            xhr.open('GET', document.location.href, true);
-            xhr.send(null);
-        } else if (data) {
-            jsonText = data.text;
-            formatToHTML(data.fnName, data.offset);
-        }
-    }
-}
-
 function onToggle(event) {
     var collapsed, ellipsis, target = event.target;
     if (event.target.className == 'collapser') {
@@ -223,7 +152,6 @@ function onToggle(event) {
         } else {
             collapsed.parentNode.classList.add('collapsed');
             ellipsis.setAttribute('data-value', collapsed.childElementCount.toString());
-            console.log(collapsed.childElementCount);
         }
     }
 }
@@ -249,7 +177,15 @@ function onReduce() {
 }
 
 function onViewSource() {
-    window.open(location.href, '_blank').focus();
+    var w = openNewContent('assets/source.html');
+}
+
+function onOptions() {
+    openNewContent('assets/options.html');
+}
+
+function openNewContent(contentPath) {
+    return window.open(chrome.runtime.getURL(contentPath), '_blank').focus();
 }
 
 function getParentLI(element) {
@@ -330,6 +266,71 @@ function onContextMenu() {
     }
 }
 
+function extractData(rawText) {
+    var tokens, text = rawText.trim();
+
+    function test(text) {
+        return ((text.charAt(0) == '[' && text.charAt(text.length - 1) == ']') ||
+        (text.charAt(0) == '{' && text.charAt(text.length - 1) == '}'));
+    }
+
+    if (test(text)) {
+        return {
+            text: rawText,
+            offset: 0
+        };
+    }
+    tokens = text.match(/^([^\s\(]*)\s*\(([\s\S]*)\)\s*;?$/);
+    if (tokens && tokens[1] && tokens[2]) {
+        if (test(tokens[2].trim())) {
+            return {
+                fnName: tokens[1],
+                text: tokens[2],
+                offset: rawText.indexOf(tokens[2])
+            };
+        }
+    }
+}
+
+function processData(data) {
+    var xhr, jsonText;
+
+    function formatToHTML(fnName, offset) {
+        if (!jsonText) return;
+
+        port.postMessage({
+            jsonToHTML: true,
+            json: jsonText,
+            fnName: fnName,
+            offset: offset
+        });
+        try {
+            jsonObject = JSON.parse(jsonText);
+        } catch (e) {
+        }
+    }
+
+    if (window == top || options.injectInFrame) {
+        if (options.safeMethod) {
+            xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                if (this.readyState == 4) {
+                    data = extractData(this.responseText);
+                    if (data) {
+                        jsonText = data.text;
+                        formatToHTML(data.fnName, data.offset);
+                    }
+                }
+            };
+            xhr.open('GET', document.location.href, true);
+            xhr.send(null);
+        } else if (data) {
+            jsonText = data.text;
+            formatToHTML(data.fnName, data.offset);
+        }
+    }
+}
+
 function init(data) {
     port.onMessage.addListener(function (msg) {
         if (msg.onInit) {
@@ -352,7 +353,8 @@ function init(data) {
         }
     });
     port.postMessage({
-        init: true
+        init: true,
+        rawData: document.getElementsByTagName('pre')[0].innerHTML
     });
 }
 

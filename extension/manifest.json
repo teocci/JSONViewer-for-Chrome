@@ -34,6 +34,7 @@
   ],
   "web_accessible_resources": [
     "assets/options.html",
+    "assets/source.html",
     "assets/csseditor.html",
     "assets/css/jsonview.css",
     "assets/css/jsonview-core.css",
