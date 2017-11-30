@@ -2492,7 +2492,7 @@ window.CodeMirror = (function() {
   }
 
   // When measuring the position of the end of a line, different
-  // browsers require different approaches. If an empty span is added,
+  // browsers loadWorker different approaches. If an empty span is added,
   // many browsers report bogus offsets. Of those, some (Webkit,
   // recent IE) will accept a space without moving the whole span to
   // the next line when wrapping it, others work with a zero-width

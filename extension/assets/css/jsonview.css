@@ -1,63 +1,60 @@
 body {
-  white-space: pre;
-  font-family: monospace;
+    white-space: pre;
+    font-family: monospace;
 }
 
 .property {
-  font-weight: bold;
+    font-weight: bold;
 }
 
 .type-null {
-  color: gray;
+    color: gray;
 }
 
 .type-boolean {
-  color: firebrick;
+    color: firebrick;
 }
 
 .type-number {
-  color: blue;
+    color: blue;
 }
 
 .type-string {
-  color: green;
+    color: green;
 }
 
 .callback-function {
-  color: gray;
+    color: gray;
 }
 
 .collapser:after {
-  font-size: 13px;
-  content: "-";
+    font-size: 13px;
+    content: "-";
 }
 
 .collapsed > .collapser:after {
-  font-size: 13px;
-  content: "+";
+    font-size: 13px;
+    content: "+";
 }
 
 .ellipsis:after {
-  content: " … ";
+    content: attr(data-value);
 }
 
 .collapsible {
-  margin-left: 2em;
+    margin-left: 2em;
 }
 
 .hoverable {
-  padding-top: 1px;
-  padding-bottom: 1px;
-  padding-left: 2px;
-  padding-right: 2px;
-  border-radius: 2px;
+    padding: 1px 2px;
+    border-radius: 2px;
 }
 
 .hovered {
-  background-color: rgba(235, 238, 249, 1);  
+    background-color: rgba(235, 238, 249, 1);
 }
 
 .collapser {
-  padding-right: 6px;
-  padding-left: 6px;
+    padding-right: 6px;
+    padding-left: 6px;
 }

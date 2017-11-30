@@ -1,114 +1,176 @@
-var port = chrome.runtime.connect(), collapsers, options, jsonObject;
+var port = chrome.runtime.connect(),
+    collapsers,
+    options,
+    jsonObject,
+    errorLocs = [];
 
 function displayError(error, loc, offset) {
-    var link = document.createElement("link"), pre = document.body.firstChild.firstChild, text = pre.textContent.substring(offset), start = 0, ranges = [], idx = 0, end, range = document
-        .createRange(), imgError = document.createElement("img"), content = document.createElement("div"), errorPosition = document.createElement("span"), container = document
-        .createElement("div"), closeButton = document.createElement("div");
-    link.rel = "stylesheet";
-    link.type = "text/css";
-    link.href = chrome.runtime.getURL("assets/css/content_error.css");
-    document.head.appendChild(link);
-    while (idx != -1) {
-        idx = text.indexOf("\n", start);
-        ranges.push(start);
-        start = idx + 1;
+    var locKey = loc.first_column + ';' +
+        loc.first_line + ';' +
+        loc.last_column + ';' +
+        loc.last_line;
+
+    if (errorLocs.indexOf(locKey) == -1) {
+        errorLocs.push(locKey);
+
+        var link = document.createElement('link'),
+            pre = document.body.firstChild.firstChild,
+            text = pre.textContent.substring(offset),
+            range = document.createRange(),
+            imgError = document.createElement('img'),
+            content = document.createElement('div'),
+            errorPosition = document.createElement('span'),
+            container = document.createElement('div'),
+            closeButton = document.createElement('div'),
+            start = 0,
+            ranges = [],
+            idx = 0,
+            end;
+
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = chrome.runtime.getURL('assets/css/content_error.css');
+        document.head.appendChild(link);
+
+        while (idx != -1) {
+            idx = text.indexOf('\n', start);
+            ranges.push(start);
+            start = idx + 1;
+        }
+
+        start = ranges[loc.first_line - 1] + loc.first_column + offset;
+        end = ranges[loc.last_line - 1] + loc.last_column + offset;
+        range.setStart(pre, start);
+        if (start == end - 1) {
+            range.setEnd(pre, start);
+        } else {
+            range.setEnd(pre, end);
+        }
+
+        errorPosition.className = 'error-position';
+        errorPosition.id = 'error-position';
+        range.surroundContents(errorPosition);
+
+        imgError.src = chrome.runtime.getURL('assets/images/error.gif');
+        errorPosition.appendChild(imgError);
+
+        closeButton.className = 'close-error';
+        closeButton.onclick = function () {
+            content.parentElement.removeChild(content);
+        };
+
+        content.className = 'content';
+        content.textContent = error;
+        content.appendChild(closeButton);
+        container.className = 'container';
+        container.appendChild(content);
+        errorPosition.parentNode.insertBefore(container, errorPosition.nextSibling);
+
+        location.hash = 'error-position';
+        history.replaceState({}, '', '#');
     }
-    start = ranges[loc.first_line - 1] + loc.first_column + offset;
-    end = ranges[loc.last_line - 1] + loc.last_column + offset;
-    range.setStart(pre, start);
-    if (start == end - 1)
-        range.setEnd(pre, start);
-    else
-        range.setEnd(pre, end);
-    errorPosition.className = "error-position";
-    errorPosition.id = "error-position";
-    range.surroundContents(errorPosition);
-    imgError.src = chrome.runtime.getURL("assets/images/error.gif");
-    errorPosition.insertBefore(imgError, errorPosition.firstChild);
-    content.className = "content";
-    closeButton.className = "close-error";
-    closeButton.onclick = function () {
-        content.parentElement.removeChild(content);
-    };
-    content.textContent = error;
-    content.appendChild(closeButton);
-    container.className = "container";
-    container.appendChild(content);
-    errorPosition.parentNode.insertBefore(container, errorPosition.nextSibling);
-    location.hash = "error-position";
-    history.replaceState({}, "", "#");
 }
 
 function displayUI(theme, html) {
-    var statusElement, toolboxElement, expandElement, reduceElement, viewSourceElement, optionsElement, content = "", copyPathElement;
-    content += '<link rel="stylesheet" type="text/css" href="' + chrome.runtime.getURL("assets/css/jsonview-core.css") + '">';
-    content += "<style>" + theme + "</style>";
+    var statusElement,
+        toolboxElement,
+        expandElement,
+        reduceElement,
+        viewSourceElement,
+        optionsElement,
+        content = "",
+        copyPathElement;
+
+    content += '<link rel="stylesheet" type="text/css" href="' + chrome.runtime.getURL('assets/css/jsonview-core.css') + '">';
+    content += '<style>' + theme + '</style>';
     content += html;
     document.body.innerHTML = content;
-    collapsers = document.querySelectorAll("#json .collapsible .collapsible");
-    statusElement = document.createElement("div");
-    statusElement.className = "status";
-    copyPathElement = document.createElement("div");
-    copyPathElement.className = "copy-path";
+
+    collapsers = document.querySelectorAll('#json .collapsible .collapsible');
+
+    copyPathElement = document.createElement('div');
+    copyPathElement.className = 'copy-path';
+    statusElement = document.createElement('div');
+    statusElement.className = 'status';
     statusElement.appendChild(copyPathElement);
     document.body.appendChild(statusElement);
-    toolboxElement = document.createElement("div");
-    toolboxElement.className = "toolbox";
-    expandElement = document.createElement("span");
-    expandElement.title = "expand all";
+
+    toolboxElement = document.createElement('div');
+    toolboxElement.className = 'toolbox';
+
+    expandElement = document.createElement('button');
+    expandElement.id = 'expand_all';
     expandElement.innerText = "+";
-    reduceElement = document.createElement("span");
-    reduceElement.title = "reduce all";
+    reduceElement = document.createElement('button');
+    reduceElement.id = 'reduce_all';
     reduceElement.innerText = "-";
-    viewSourceElement = document.createElement("a");
+    viewSourceElement = document.createElement('button');
+    viewSourceElement.id = 'view_source';
     viewSourceElement.innerText = "View source";
-    viewSourceElement.target = "_blank";
-    viewSourceElement.href = "view-source:" + location.href;
-    optionsElement = document.createElement("img");
-    optionsElement.title = "options";
-    optionsElement.src = chrome.runtime.getURL("assets/images/options.png");
+    // viewSourceElement.target = "_blank";
+    // viewSourceElement.href = "view-source:" + location.href;
+    optionsElement = document.createElement('img');
+    optionsElement.title = 'options';
+    optionsElement.src = chrome.runtime.getURL('assets/images/options.png');
+
     toolboxElement.appendChild(expandElement);
     toolboxElement.appendChild(reduceElement);
     toolboxElement.appendChild(viewSourceElement);
     toolboxElement.appendChild(optionsElement);
+
     document.body.appendChild(toolboxElement);
-    document.body.addEventListener('click', ontoggle, false);
-    document.body.addEventListener('mouseover', onmouseMove, false);
-    document.body.addEventListener('click', onmouseClick, false);
+    document.body.addEventListener('click', onToggle, false);
+    document.body.addEventListener('mouseover', onMouseMove, false);
+    document.body.addEventListener('click', onMouseClick, false);
     document.body.addEventListener('contextmenu', onContextMenu, false);
-    expandElement.addEventListener('click', onexpand, false);
-    reduceElement.addEventListener('click', onreduce, false);
-    optionsElement.addEventListener("click", function () {
-        window.open(chrome.runtime.getURL("assets/options.html"));
-    }, false);
-    copyPathElement.addEventListener("click", function () {
-        port.postMessage({
-            copyPropertyPath: true,
-            path: statusElement.innerText
-        });
-    }, false);
+
+    expandElement.addEventListener('click', onExpand, false);
+    reduceElement.addEventListener('click', onReduce, false);
+
+
+    viewSourceElement.addEventListener('click', onViewSource, false);
+
+    optionsElement.addEventListener('click', openNewContent('assets/options.html'), false);
+    copyPathElement.addEventListener(
+        'click',
+        function () {
+            port.postMessage({
+                copyPropertyPath: true,
+                path: statusElement.innerText
+            });
+        },
+        false
+    );
 }
+
+function openNewContent(contentPath) {
+    window.open(chrome.runtime.getURL());
+}
+
 
 function extractData(rawText) {
     var tokens, text = rawText.trim();
 
     function test(text) {
-        return ((text.charAt(0) == "[" && text.charAt(text.length - 1) == "]") || (text.charAt(0) == "{" && text.charAt(text.length - 1) == "}"));
+        return ((text.charAt(0) == '[' && text.charAt(text.length - 1) == ']') ||
+        (text.charAt(0) == '{' && text.charAt(text.length - 1) == '}'));
     }
 
-    if (test(text))
+    if (test(text)) {
         return {
             text: rawText,
             offset: 0
         };
+    }
     tokens = text.match(/^([^\s\(]*)\s*\(([\s\S]*)\)\s*;?$/);
     if (tokens && tokens[1] && tokens[2]) {
-        if (test(tokens[2].trim()))
+        if (test(tokens[2].trim())) {
             return {
                 fnName: tokens[1],
                 text: tokens[2],
                 offset: rawText.indexOf(tokens[2])
             };
+        }
     }
 }
 
@@ -116,8 +178,8 @@ function processData(data) {
     var xhr, jsonText;
 
     function formatToHTML(fnName, offset) {
-        if (!jsonText)
-            return;
+        if (!jsonText) return;
+
         port.postMessage({
             jsonToHTML: true,
             json: jsonText,
@@ -130,7 +192,7 @@ function processData(data) {
         }
     }
 
-    if (window == top || options.injectInFrame)
+    if (window == top || options.injectInFrame) {
         if (options.safeMethod) {
             xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function () {
@@ -142,130 +204,150 @@ function processData(data) {
                     }
                 }
             };
-            xhr.open("GET", document.location.href, true);
+            xhr.open('GET', document.location.href, true);
             xhr.send(null);
         } else if (data) {
             jsonText = data.text;
             formatToHTML(data.fnName, data.offset);
         }
-}
-
-function ontoggle(event) {
-    var collapsed, target = event.target;
-    if (event.target.className == 'collapser') {
-        collapsed = target.parentNode.getElementsByClassName('collapsible')[0];
-        if (collapsed.parentNode.classList.contains("collapsed"))
-            collapsed.parentNode.classList.remove("collapsed");
-        else
-            collapsed.parentNode.classList.add("collapsed");
     }
 }
 
-function onexpand() {
+function onToggle(event) {
+    var collapsed, ellipsis, target = event.target;
+    if (event.target.className == 'collapser') {
+        ellipsis = target.parentNode.getElementsByClassName('ellipsis')[0];
+        collapsed = target.parentNode.getElementsByClassName('collapsible')[0];
+        if (collapsed.parentNode.classList.contains('collapsed')) {
+            collapsed.parentNode.classList.remove('collapsed');
+        } else {
+            collapsed.parentNode.classList.add('collapsed');
+            ellipsis.setAttribute('data-value', collapsed.childElementCount.toString());
+            console.log(collapsed.childElementCount);
+        }
+    }
+}
+
+function onExpand() {
     Array.prototype.forEach.call(collapsers, function (collapsed) {
-        if (collapsed.parentNode.classList.contains("collapsed"))
-            collapsed.parentNode.classList.remove("collapsed");
+        if (collapsed.parentNode.classList.contains('collapsed')) {
+            collapsed.parentNode.classList.remove('collapsed');
+        }
     });
 }
 
-function onreduce() {
+function onReduce() {
     Array.prototype.forEach.call(collapsers, function (collapsed) {
-        if (!collapsed.parentNode.classList.contains("collapsed"))
-            collapsed.parentNode.classList.add("collapsed");
+        if (!collapsed.parentNode.classList.contains('collapsed')) {
+            var ellipsis = collapsed.parentNode.getElementsByClassName('ellipsis')[0];
+            if (ellipsis) {
+                ellipsis.setAttribute('data-value', collapsed.childElementCount.toString());
+            }
+            collapsed.parentNode.classList.add('collapsed');
+        }
     });
+}
+
+function onViewSource() {
+    window.open(location.href, '_blank').focus();
 }
 
 function getParentLI(element) {
-    if (element.tagName != "LI")
-        while (element && element.tagName != "LI")
+    if (element.tagName != 'LI')
+        while (element && element.tagName != 'LI')
             element = element.parentNode;
-    if (element && element.tagName == "LI")
+    if (element && element.tagName == 'LI')
         return element;
 }
 
-var onmouseMove = (function () {
+var onMouseMove = (function () {
     var hoveredLI;
 
-    function onmouseOut() {
-        var statusElement = document.querySelector(".status");
+    function onMouseOut() {
+        var statusElement = document.querySelector('.status');
         if (hoveredLI) {
-            hoveredLI.firstChild.classList.remove("hovered");
+            hoveredLI.firstChild.classList.remove('hovered');
             hoveredLI = null;
-            statusElement.innerText = "";
+            statusElement.innerText = '';
         }
     }
 
     return function (event) {
-        var str = "", statusElement = document.querySelector(".status");
+        var str = "", statusElement = document.querySelector('.status');
         var element = getParentLI(event.target);
         if (element) {
             if (hoveredLI)
-                hoveredLI.firstChild.classList.remove("hovered");
+                hoveredLI.firstChild.classList.remove('hovered');
             hoveredLI = element;
-            element.firstChild.classList.add("hovered");
+            element.firstChild.classList.add('hovered');
             do {
-                if (element.parentNode.classList.contains("array")) {
+                if (element.parentNode.classList.contains('array')) {
                     var index = [].indexOf.call(element.parentNode.children, element);
-                    str = "[" + index + "]" + str;
+                    str = '[' + index + ']' + str;
                 }
-                if (element.parentNode.classList.contains("obj")) {
+                if (element.parentNode.classList.contains('obj')) {
                     str = "." + element.firstChild.firstChild.innerText + str;
                 }
                 element = element.parentNode.parentNode.parentNode;
-            } while (element.tagName == "LI");
+            } while (element.tagName == 'LI');
             if (str.charAt(0) == '.')
                 str = str.substring(1);
             statusElement.innerText = str;
             return;
         }
-        onmouseOut();
+        onMouseOut();
     };
 })();
 
 var selectedLI;
 
-function onmouseClick() {
+function onMouseClick() {
     if (selectedLI)
-        selectedLI.firstChild.classList.remove("selected");
+        selectedLI.firstChild.classList.remove('selected');
     selectedLI = getParentLI(event.target);
     if (selectedLI) {
-        selectedLI.firstChild.classList.add("selected");
+        selectedLI.firstChild.classList.add('selected');
     }
 }
 
 function onContextMenu() {
-    var currentLI, statusElement, selection = "", i, value;
+    var currentLI,
+        statusElement,
+        selection = "",
+        value;
     currentLI = getParentLI(event.target);
-    statusElement = document.querySelector(".status");
+    statusElement = document.querySelector('.status');
     if (currentLI) {
         if (Array.isArray(jsonObject))
-            value = eval("(jsonObject" + statusElement.innerText + ")");
+            value = eval('(jsonObject' + statusElement.innerText + ')');
         else
-            value = eval("(jsonObject." + statusElement.innerText + ")");
+            value = eval('(jsonObject.' + statusElement.innerText + ')');
         port.postMessage({
             copyPropertyPath: true,
             path: statusElement.innerText,
-            value: typeof value == "object" ? JSON.stringify(value) : value
+            value: typeof value == 'object' ? JSON.stringify(value) : value
         });
     }
 }
 
 function init(data) {
     port.onMessage.addListener(function (msg) {
-        if (msg.oninit) {
+        if (msg.onInit) {
             options = msg.options;
             processData(data);
         }
-        if (msg.onjsonToHTML)
+        if (msg.onJsonToHTML) {
             if (msg.html) {
                 displayUI(msg.theme, msg.html);
-            } else if (msg.json)
+            } else if (msg.json) {
                 port.postMessage({
                     getError: true,
                     json: json,
                     fnName: fnName
                 });
-        if (msg.ongetError) {
+            }
+        }
+        if (msg.onGetError) {
             displayError(msg.error, msg.loc, msg.offset);
         }
     });
@@ -278,21 +360,30 @@ function stripJsonPrefix(text) {
     // Some implementations return a JSON_PREFIX to help avoid
     // allowing your JSON replies to be turned into JSONP replies.
     var JSON_PREFIXES = [")]}', ", ")]}',\n"];
-    for (var i = 0; i < JSON_PREFIXES.length; i++) {
-        if (text.substr(0, JSON_PREFIXES[i].length) == JSON_PREFIXES[i]) {
-            text = text.substr(JSON_PREFIXES[i].length);
+
+    JSON_PREFIXES.forEach(function (prefix) {
+        if (text.substr(0, prefix.length) == prefix) {
+            text = text.substr(prefix.length);
         }
-    }
+    });
+
     return text;
 }
 
 function load() {
-    var child, data;
-    if (document.body && (document.body.childNodes[0] && document.body.childNodes[0].tagName == "PRE" || document.body.children.length == 0)) {
+    if (document.body &&
+        (
+            document.body.childNodes[0] &&
+            document.body.childNodes[0].tagName == 'PRE' ||
+            document.body.children.length == 0
+        )
+    ) {
+        var child, data;
         child = document.body.children.length ? document.body.childNodes[0] : document.body;
         data = extractData(stripJsonPrefix(child.innerText));
-        if (data)
+        if (data) {
             init(data);
+        }
     }
 }
 

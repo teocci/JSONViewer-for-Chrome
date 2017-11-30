@@ -47,16 +47,39 @@ var jsonlint = (function () {
             23: "[",
             24: "]"
         },
-        productions_: [0, [3, 1], [5, 1], [7, 1], [9, 1], [9, 1], [12, 2], [13, 1], [13, 1], [13, 1], [13, 1], [13, 1], [13, 1], [15, 2], [15, 3], [20, 3], [19, 1], [19, 3], [16, 2], [16, 3], [25, 1], [25, 3]],
+        productions_: [
+            0,
+            [3, 1],
+            [5, 1],
+            [7, 1],
+            [9, 1],
+            [9, 1],
+            [12, 2],
+            [13, 1],
+            [13, 1],
+            [13, 1],
+            [13, 1],
+            [13, 1],
+            [13, 1],
+            [15, 2],
+            [15, 3],
+            [20, 3],
+            [19, 1],
+            [19, 3],
+            [16, 2],
+            [16, 3],
+            [25, 1],
+            [25, 3]
+        ],
         performAction: function anonymous(yytext, yyleng, yylineno, yy, yystate, $$, _$) {
-
             var $0 = $$.length - 1;
             switch (yystate) {
                 case 1:
                     this.$ = yytext;
                     break;
                 case 2:
-                    this.$ = Number(yytext);
+                    this.$ = numberToString(Number(yytext));
+                    console.log(numberToString(Number(yytext)));
                     break;
                 case 3:
                     this.$ = null;
@@ -102,106 +125,157 @@ var jsonlint = (function () {
                     break;
             }
         },
-        table: [{
-            3: 5,
-            4: [1, 12],
-            5: 6,
-            6: [1, 13],
-            7: 3,
-            8: [1, 9],
-            9: 4,
-            10: [1, 10],
-            11: [1, 11],
-            12: 1,
-            13: 2,
-            15: 7,
-            16: 8,
-            17: [1, 14],
-            23: [1, 15]
-        }, {1: [3]}, {14: [1, 16]}, {14: [2, 7], 18: [2, 7], 22: [2, 7], 24: [2, 7]}, {
-            14: [2, 8],
-            18: [2, 8],
-            22: [2, 8],
-            24: [2, 8]
-        }, {14: [2, 9], 18: [2, 9], 22: [2, 9], 24: [2, 9]}, {
-            14: [2, 10],
-            18: [2, 10],
-            22: [2, 10],
-            24: [2, 10]
-        }, {14: [2, 11], 18: [2, 11], 22: [2, 11], 24: [2, 11]}, {
-            14: [2, 12],
-            18: [2, 12],
-            22: [2, 12],
-            24: [2, 12]
-        }, {14: [2, 3], 18: [2, 3], 22: [2, 3], 24: [2, 3]}, {
-            14: [2, 4],
-            18: [2, 4],
-            22: [2, 4],
-            24: [2, 4]
-        }, {14: [2, 5], 18: [2, 5], 22: [2, 5], 24: [2, 5]}, {
-            14: [2, 1],
-            18: [2, 1],
-            21: [2, 1],
-            22: [2, 1],
-            24: [2, 1]
-        }, {14: [2, 2], 18: [2, 2], 22: [2, 2], 24: [2, 2]}, {3: 20, 4: [1, 12], 18: [1, 17], 19: 18, 20: 19}, {
-            3: 5,
-            4: [1, 12],
-            5: 6,
-            6: [1, 13],
-            7: 3,
-            8: [1, 9],
-            9: 4,
-            10: [1, 10],
-            11: [1, 11],
-            13: 23,
-            15: 7,
-            16: 8,
-            17: [1, 14],
-            23: [1, 15],
-            24: [1, 21],
-            25: 22
-        }, {1: [2, 6]}, {14: [2, 13], 18: [2, 13], 22: [2, 13], 24: [2, 13]}, {18: [1, 24], 22: [1, 25]}, {
-            18: [2, 16],
-            22: [2, 16]
-        }, {21: [1, 26]}, {14: [2, 18], 18: [2, 18], 22: [2, 18], 24: [2, 18]}, {
-            22: [1, 28],
-            24: [1, 27]
-        }, {22: [2, 20], 24: [2, 20]}, {14: [2, 14], 18: [2, 14], 22: [2, 14], 24: [2, 14]}, {
-            3: 20,
-            4: [1, 12],
-            20: 29
-        }, {
-            3: 5,
-            4: [1, 12],
-            5: 6,
-            6: [1, 13],
-            7: 3,
-            8: [1, 9],
-            9: 4,
-            10: [1, 10],
-            11: [1, 11],
-            13: 30,
-            15: 7,
-            16: 8,
-            17: [1, 14],
-            23: [1, 15]
-        }, {14: [2, 19], 18: [2, 19], 22: [2, 19], 24: [2, 19]}, {
-            3: 5,
-            4: [1, 12],
-            5: 6,
-            6: [1, 13],
-            7: 3,
-            8: [1, 9],
-            9: 4,
-            10: [1, 10],
-            11: [1, 11],
-            13: 31,
-            15: 7,
-            16: 8,
-            17: [1, 14],
-            23: [1, 15]
-        }, {18: [2, 17], 22: [2, 17]}, {18: [2, 15], 22: [2, 15]}, {22: [2, 21], 24: [2, 21]}],
+        table: [
+            {
+                3: 5,
+                4: [1, 12],
+                5: 6,
+                6: [1, 13],
+                7: 3,
+                8: [1, 9],
+                9: 4,
+                10: [1, 10],
+                11: [1, 11],
+                12: 1,
+                13: 2,
+                15: 7,
+                16: 8,
+                17: [1, 14],
+                23: [1, 15]
+            },
+            {
+                1: [3]
+            },
+            {
+                14: [1, 16]
+            },
+            {
+                14: [2, 7], 18: [2, 7], 22: [2, 7], 24: [2, 7]
+            },
+            {
+                14: [2, 8], 18: [2, 8], 22: [2, 8], 24: [2, 8]
+            },
+            {
+                14: [2, 9], 18: [2, 9], 22: [2, 9], 24: [2, 9]
+            },
+            {
+                14: [2, 10], 18: [2, 10], 22: [2, 10], 24: [2, 10]
+            },
+            {
+                14: [2, 11], 18: [2, 11], 22: [2, 11], 24: [2, 11]
+            },
+            {
+                14: [2, 12], 18: [2, 12], 22: [2, 12], 24: [2, 12]
+            },
+            {
+                14: [2, 3], 18: [2, 3], 22: [2, 3], 24: [2, 3]
+            },
+            {
+                14: [2, 4], 18: [2, 4], 22: [2, 4], 24: [2, 4]
+            },
+            {
+                14: [2, 5], 18: [2, 5], 22: [2, 5], 24: [2, 5]
+            }, {
+                14: [2, 1], 18: [2, 1], 21: [2, 1], 22: [2, 1], 24: [2, 1]
+            },
+            {
+                14: [2, 2], 18: [2, 2], 22: [2, 2], 24: [2, 2]
+            },
+            {
+                3: 20, 4: [1, 12], 18: [1, 17], 19: 18, 20: 19
+            }, {
+                3: 5,
+                4: [1, 12],
+                5: 6,
+                6: [1, 13],
+                7: 3,
+                8: [1, 9],
+                9: 4,
+                10: [1, 10],
+                11: [1, 11],
+                13: 23,
+                15: 7,
+                16: 8,
+                17: [1, 14],
+                23: [1, 15],
+                24: [1, 21],
+                25: 22
+            },
+            {
+                1: [2, 6]
+            },
+            {
+                14: [2, 13], 18: [2, 13], 22: [2, 13], 24: [2, 13]
+            },
+            {
+                18: [1, 24], 22: [1, 25]
+            },
+            {
+                18: [2, 16], 22: [2, 16]
+            },
+            {
+                21: [1, 26]
+            },
+            {
+                14: [2, 18], 18: [2, 18], 22: [2, 18], 24: [2, 18]
+            },
+            {
+                22: [1, 28], 24: [1, 27]
+            },
+            {
+                22: [2, 20], 24: [2, 20]
+            },
+            {
+                14: [2, 14], 18: [2, 14], 22: [2, 14], 24: [2, 14]
+            },
+            {
+                3: 20, 4: [1, 12], 20: 29
+            },
+            {
+                3: 5,
+                4: [1, 12],
+                5: 6,
+                6: [1, 13],
+                7: 3,
+                8: [1, 9],
+                9: 4,
+                10: [1, 10],
+                11: [1, 11],
+                13: 30,
+                15: 7,
+                16: 8,
+                17: [1, 14],
+                23: [1, 15]
+            },
+            {
+                14: [2, 19], 18: [2, 19], 22: [2, 19], 24: [2, 19]
+            },
+            {
+                3: 5,
+                4: [1, 12],
+                5: 6,
+                6: [1, 13],
+                7: 3,
+                8: [1, 9],
+                9: 4,
+                10: [1, 10],
+                11: [1, 11],
+                13: 31,
+                15: 7,
+                16: 8,
+                17: [1, 14],
+                23: [1, 15]
+            },
+            {
+                18: [2, 17], 22: [2, 17]
+            },
+            {
+                18: [2, 15], 22: [2, 15]
+            },
+            {
+                22: [2, 21], 24: [2, 21]
+            }
+        ],
         defaultActions: {16: [2, 6]},
         parseError: function parseError(str, hash) {
             throw new Error(str);
@@ -224,13 +298,17 @@ var jsonlint = (function () {
             this.lexer.setInput(input);
             this.lexer.yy = this.yy;
             this.yy.lexer = this.lexer;
-            if (typeof this.lexer.yylloc == 'undefined')
+
+            if (typeof this.lexer.yylloc == 'undefined') {
                 this.lexer.yylloc = {};
+            }
+
             var yyloc = this.lexer.yylloc;
             lstack.push(yyloc);
 
-            if (typeof this.yy.parseError === 'function')
+            if (typeof this.yy.parseError === 'function') {
                 this.parseError = this.yy.parseError;
+            }
 
             function popStack(n) {
                 stack.length = stack.length - 2 * n;
@@ -241,14 +319,26 @@ var jsonlint = (function () {
             function lex() {
                 var token;
                 token = self.lexer.lex() || 1; // $end = 1
+                console.log('token: ' + token);
                 // if token isn't its numeric value, convert
                 if (typeof token !== 'number') {
                     token = self.symbols_[token] || token;
                 }
                 return token;
-            };
+            }
 
-            var symbol = null, preErrorSymbol, state, action, a, r, yyval = {}, p, len, newState, expected;
+            var symbol = null,
+                preErrorSymbol,
+                state,
+                action,
+                a,
+                r,
+                yyval = {},
+                p,
+                len,
+                newState,
+                expected;
+
             while (true) {
                 // retrieves state number from top of stack
                 state = stack[stack.length - 1];
@@ -263,9 +353,8 @@ var jsonlint = (function () {
                     action = table[state] && table[state][symbol];
                 }
 
-                // handle parse error
+                // Handle parse error
                 if (typeof action === 'undefined' || !action.length || !action[0]) {
-
                     if (!recovering) {
                         // Report error
                         expected = [];
@@ -274,11 +363,11 @@ var jsonlint = (function () {
                         }
                         var errStr = '';
                         if (this.lexer.showPosition) {
-                            errStr = 'Parse error on line ' + (yylineno + 1) + ":\n" + this.lexer.showPosition() + '\nExpecting ' + expected.join(', ');
+                            errStr = 'Parse error on line ' + (yylineno + 1) + ':\n' +
+                                this.lexer.showPosition() + '\nExpecting ' + expected.join(', ');
                         } else {
                             errStr = 'Parse error on line ' + (yylineno + 1) + ": Unexpected " +
-                                (symbol == 1 /* EOF */ ? "end of input" :
-                                    ("'" + (this.terminals_[symbol] || symbol) + "'"));
+                                (symbol == 1 /* EOF */ ? "end of input" : ("'" + (this.terminals_[symbol] || symbol) + "'"));
                         }
                         this.parseError(errStr,
                             {
@@ -330,10 +419,8 @@ var jsonlint = (function () {
                 }
 
                 switch (action[0]) {
-
                     case 1: // shift
                         // this.shiftCount++;
-
                         stack.push(symbol);
                         vstack.push(this.lexer.yytext);
                         lstack.push(this.lexer.yylloc);
@@ -354,7 +441,6 @@ var jsonlint = (function () {
 
                     case 2: // reduce
                         // this.reductionCount++;
-
                         len = this.productions_[action[1]][1];
 
                         // perform semantic action
@@ -379,7 +465,7 @@ var jsonlint = (function () {
                             lstack = lstack.slice(0, -1 * len);
                         }
 
-                        stack.push(this.productions_[action[1]][0]);    // push nonterminal (reduce)
+                        stack.push(this.productions_[action[1]][0]); // push nonterminal (reduce)
                         vstack.push(yyval.$);
                         lstack.push(yyval._$);
                         // goto new state = table[STATE][NONTERMINAL]
@@ -390,13 +476,12 @@ var jsonlint = (function () {
                     case 3: // accept
                         return true;
                 }
-
             }
 
             return true;
         }
     };
-    /* Jison generated lexer */
+    /* Json generated lexer */
     var lexer = (function () {
         var lexer = ({
             EOF: 1,
@@ -437,19 +522,19 @@ var jsonlint = (function () {
             },
             pastInput: function () {
                 var past = this.matched.substr(0, this.matched.length - this.match.length);
-                return (past.length > 20 ? '...' : '') + past.substr(-20).replace(/\n/g, "");
+                return (past.length > 20 ? '...' : '') + past.substr(-20).replace(/\n/g, '');
             },
             upcomingInput: function () {
                 var next = this.match;
                 if (next.length < 20) {
                     next += this._input.substr(0, 20 - next.length);
                 }
-                return (next.substr(0, 20) + (next.length > 20 ? '...' : '')).replace(/\n/g, "");
+                return (next.substr(0, 20) + (next.length > 20 ? '...' : '')).replace(/\n/g, '');
             },
             showPosition: function () {
                 var pre = this.pastInput();
-                var c = new Array(pre.length + 1).join("-");
-                return pre + this.upcomingInput() + "\n" + c + "^";
+                var c = new Array(pre.length + 1).join('-');
+                return pre + this.upcomingInput() + '\n' + c + '^';
             },
             next: function () {
                 if (this.done) {
@@ -489,11 +574,11 @@ var jsonlint = (function () {
                         else return;
                     }
                 }
-                if (this._input === "") {
+                if (this._input === '') {
                     return this.EOF;
                 } else {
                     this.parseError('Lexical error on line ' + (this.yylineno + 1) + '. Unrecognized text.\n' + this.showPosition(),
-                        {text: "", token: null, line: this.yylineno});
+                        {text: '', token: null, line: this.yylineno});
                 }
             },
             lex: function lex() {
@@ -514,8 +599,8 @@ var jsonlint = (function () {
                 return this.conditions[this.conditionStack[this.conditionStack.length - 1]].rules;
             }
         });
-        lexer.performAction = function anonymous(yy, yy_, $avoiding_name_collisions, YY_START) {
 
+        lexer.performAction = function anonymous(yy, yy_, $avoiding_name_collisions, YY_START) {
             var YYSTATE = YY_START;
             switch ($avoiding_name_collisions) {
                 case 0:/* skip whitespace */
@@ -562,39 +647,107 @@ var jsonlint = (function () {
                     break;
             }
         };
-        lexer.rules = [/^\s+/, /^-?([0-9]|[1-9][0-9]+)(\.[0-9]+)?([eE][-+]?[0-9]+)?\b/, /^"(\\["bfnrt/\\]|\\u[a-fA-F0-9]{4}|[^\0-\x09\x0a-\x1f"\\])*"/, /^\{/, /^\}/, /^\[/, /^\]/, /^,/, /^:/, /^true\b/, /^false\b/, /^null\b/, /^$/, /^./];
-        lexer.conditions = {"INITIAL": {"rules": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13], "inclusive": true}};
+
+        lexer.rules = [
+            /^\s+/, /^-?([0-9]|[1-9][0-9]+)(\.[0-9]+)?([eE][-+]?[0-9]+)?\b/,
+            /^"(\\["bfnrt/\\]|\\u[a-fA-F0-9]{4}|[^\0-\x09\x0a-\x1f"\\])*"/,
+            /^\{/,
+            /^\}/,
+            /^\[/,
+            /^\]/,
+            /^,/,
+            /^:/,
+            /^true\b/,
+            /^false\b/,
+            /^null\b/,
+            /^$/,
+            /^./
+        ];
+
+        lexer.conditions = {
+            "INITIAL": {
+                "rules": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+                "inclusive": true
+            }
+        };
         return lexer;
-    })()
+    })();
     parser.lexer = lexer;
     return parser;
 })();
+
 if (typeof require !== 'undefined' && typeof exports !== 'undefined') {
     exports.parser = jsonlint;
     exports.parse = function () {
         return jsonlint.parse.apply(jsonlint, arguments);
-    }
+    };
     exports.main = function commonjsMain(args) {
         if (!args[1])
             throw new Error('Usage: ' + args[0] + ' FILE');
         if (typeof process !== 'undefined') {
-            var source = require('fs').readFileSync(require('path').join(process.cwd(), args[1]), "utf8");
+            var source = require('fs').readFileSync(require('path').join(process.cwd(), args[1]), 'utf8');
         } else {
-            var cwd = require("file").path(require("file").cwd());
-            var source = cwd.join(args[1]).read({charset: "utf-8"});
+            var cwd = require('file').path(require('file').cwd());
+            var source = cwd.join(args[1]).read({charset: 'utf-8'});
         }
         return exports.parser.parse(source);
-    }
+    };
     if (typeof module !== 'undefined' && require.main === module) {
         exports.main(typeof process !== 'undefined' ? process.argv.slice(1) : require("system").args);
     }
 }
 
-addEventListener("message", function (event) {
-    var errorMessage;
-    try {
-        jsonlint.parse(event.data);
-    } catch (errorMessage) {
-        postMessage(JSON.stringify({error: errorMessage.toString(), loc: jsonlint.lexer.yylloc}));
+function toFixed(x) {
+    if (Math.abs(x) < 1.0) {
+        var e = parseInt(x.toString().split('e-')[1]);
+        if (e) {
+            x *= Math.pow(10, e - 1);
+            x = '0.' + (new Array(e)).join('0') + x.toString().substring(2);
+        }
+    } else {
+        var e = parseInt(x.toString().split('+')[1]);
+        if (e > 20) {
+            e -= 20;
+            x /= Math.pow(10, e);
+            x += (new Array(e + 1)).join('0');
+        }
     }
-}, false);
+    return x;
+}
+
+function numberToString(num) {
+    var numStr = String(num);
+
+    if (Math.abs(num) < 1.0) {
+        var e = parseInt(num.toString().split('e-')[1]);
+        if (e) {
+            var negative = num < 0;
+            if (negative) num *= -1
+            num *= Math.pow(10, e - 1);
+            numStr = '0.' + (new Array(e)).join('0') + num.toString().substring(2);
+            if (negative) numStr = '-' + numStr;
+        }
+    }
+    else {
+        var e = parseInt(num.toString().split('+')[1]);
+        if (e > 20) {
+            e -= 20;
+            num /= Math.pow(10, e);
+            numStr = num.toString() + (new Array(e + 1)).join('0');
+        }
+    }
+
+    return numStr;
+}
+
+addEventListener(
+    'message',
+    function (event) {
+        try {
+            jsonlint.parse(event.data);
+        } catch (errorMessage) {
+            postMessage(JSON.stringify({error: errorMessage.toString(), loc: jsonlint.lexer.yylloc}));
+        }
+    },
+    false
+);

@@ -1,9 +1,8 @@
 {
   "manifest_version": 2,
-
   "name": "JSON Viewer",
   "short_name": "JSONViewer",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "Validates and makes JSON documents easy to read. Open source.",
   "homepage_url": "https://github.com/teocci/JSONView-for-Chrome",
   "minimum_chrome_version": "21",
@@ -12,20 +11,27 @@
     "48": "assets/images/jsonview48.png",
     "128": "assets/images/jsonview128.png"
   },
-  "background" : {
-    "scripts": ["background.js"]
+  "background": {
+    "scripts": [
+      "background.js",
+      "js/referrals.js"
+    ]
   },
-  "content_scripts": [{
-    "matches": [
-      "http://*/*", 
-      "https://*/*", 
-      "ftp://*/*", 
-      "file:///*"
-    ],
-    "js": ["content.js"],
-    "run_at" : "document_end",
-    "all_frames" : true
-  }],
+  "content_scripts": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*",
+        "ftp://*/*",
+        "file:///*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_end",
+      "all_frames": true
+    }
+  ],
   "web_accessible_resources": [
     "assets/options.html",
     "assets/csseditor.html",
@@ -33,14 +39,16 @@
     "assets/css/jsonview-core.css",
     "assets/css/content_error.css",
     "assets/images/options.png",
-    "assets/images/close_icon.gif",
+    "assets/images/close.png",
     "assets/images/error.gif"
   ],
   "permissions": [
-    "clipboardWrite", 
-    "http://*/", 
-    "contextMenus", 
-    "https://*/", 
-    "ftp://*/"
+    "webRequest",
+    "webRequestBlocking",
+    "clipboardWrite",
+    "contextMenus",
+    "http://*/*",
+    "https://*/*",
+    "ftp://*/*"
   ]
 }
