@@ -13,22 +13,16 @@
   },
   "background": {
     "scripts": [
-      "background.js",
-      "js/referrals.js"
+      "background.js"
     ]
   },
   "content_scripts": [
     {
-      "matches": [
-        "http://*/*",
-        "https://*/*",
-        "ftp://*/*",
-        "file:///*"
-      ],
+      "matches": ["<all_urls>"],
       "js": [
         "content.js"
       ],
-      "run_at": "document_end",
+      "run_at": "document_start",
       "all_frames": true
     }
   ],
@@ -44,12 +38,9 @@
     "assets/images/error.gif"
   ],
   "permissions": [
-    "webRequest",
-    "webRequestBlocking",
     "clipboardWrite",
     "contextMenus",
-    "http://*/*",
-    "https://*/*",
-    "ftp://*/*"
+    "*://*/*",
+    "<all_urls>"
   ]
 }

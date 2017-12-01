@@ -14,7 +14,7 @@ function initSource() {
             var rawData = msg.rawData;
             if (rawData) {
                 if (code) {
-                    code.innerHTML = rawData;
+                    code.innerHTML = JSON.stringify(JSON.parse(rawData));
                 }
             }
         }

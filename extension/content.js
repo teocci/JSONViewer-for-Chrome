@@ -1,8 +1,9 @@
 var port = chrome.runtime.connect(),
     collapsers,
     options,
-    jsonObject;
-errorLocs = [];
+    jsonObject,
+    rawData,
+    errorLocs = [];
 
 function displayError(error, loc, offset) {
     var locKey = loc.first_column + ';' +
@@ -354,7 +355,7 @@ function init(data) {
     });
     port.postMessage({
         init: true,
-        rawData: document.getElementsByTagName('pre')[0].innerHTML
+        rawData: rawData.innerHTML
     });
 }
 
@@ -380,13 +381,15 @@ function load() {
             document.body.children.length == 0
         )
     ) {
-        var child, data;
-        child = document.body.children.length ? document.body.childNodes[0] : document.body;
-        data = extractData(stripJsonPrefix(child.innerText));
+        var data;
+        rawData = document.body.children.length ? document.body.childNodes[0] : document.body;
+
+        data = extractData(stripJsonPrefix(rawData.innerText));
         if (data) {
             init(data);
         }
     }
 }
 
-load();
+document.addEventListener('DOMContentLoaded', load, false);
+
