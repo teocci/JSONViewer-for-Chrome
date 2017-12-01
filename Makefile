@@ -1,2 +1,2 @@
 build:
-	dirname=$(shell basename $(PWD)); cd WebContent; zip -r ../$$dirname.zip .
+	dirname=$(shell basename $(PWD)); cd extension; zip -r ../$$dirname.zip .
