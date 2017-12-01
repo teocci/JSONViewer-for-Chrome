@@ -1,4 +1,5 @@
 var port = chrome.runtime.connect();
+var code = document.getElementById('raw_data');
 
 function initSource() {
     var bgPage = chrome.extension.getBackgroundPage();
@@ -9,14 +10,14 @@ function initSource() {
     });
 
     port.onMessage.addListener(function (msg) {
-        port.onMessage.addListener(function (msg) {
-            if (msg.loadRawData) {
-                var rawData = msg.rawData;
-                if (rawData) {
-                    document.body.innerHTML = rawData;
+        if (msg.loadRawData) {
+            var rawData = msg.rawData;
+            if (rawData) {
+                if (code) {
+                    code.innerHTML = rawData;
                 }
             }
-        });
+        }
     });
 }
 
