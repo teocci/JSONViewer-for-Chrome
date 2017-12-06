@@ -127,7 +127,6 @@ function init() {
     });
     refreshMenuEntry();
 }
-init();
 
 var options = {};
 if (localStorage.options)
