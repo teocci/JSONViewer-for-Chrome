@@ -75,7 +75,7 @@ function objectToHTML(json) {
     keys.forEach(function (key) {
         hasContents = true;
         output += '<li><div class="hoverable">';
-        output += '<span class="property">' + htmlEncode(key) + '</span>: ';
+        output += '<span class="property">"' + htmlEncode(key) + '"</span>: ';
         output += valueToHTML(json[key]);
         if (index < length - 1) {
             output += ',';
