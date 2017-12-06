@@ -72,10 +72,9 @@ function objectToHTML(json) {
     var keys = Object.keys(json),
         output = '<div class="collapser"></div>{<span class="ellipsis"></span><ul class="obj collapsible">',
         hasContents = false,
-        index = 0,
         length = keys.length;
 
-    keys.forEach(function (key) {
+    keys.forEach(function (key, index) {
         hasContents = true;
         output += '<li><div class="hoverable">';
         output += '<span class="property">"' + htmlEncode(key) + '"</span>: ';
