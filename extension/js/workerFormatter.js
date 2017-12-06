@@ -6,11 +6,14 @@
  */
 
 function htmlEncode(t) {
-    return t != null ? t.toString()
+    if (t === null) return '';
+
+    return t.toString()
         .replace(/&/g, '&amp;')
         .replace(/"/g, '&quot;')
         .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;') : '';
+        .replace(/>/g, '&gt;')
+        .replace(/ /g, '&nbsp;');
 }
 
 function decorateWithSpan(value, className) {
