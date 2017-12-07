@@ -127,7 +127,6 @@ function init() {
     });
     refreshMenuEntry();
 }
-init();
 
 var options = {};
 if (localStorage.options)
@@ -140,8 +139,7 @@ if (typeof options.addContextMenu == 'undefined') {
 if (!localStorage.theme) {
     getDefaultTheme(function (theme) {
         localStorage.theme = theme;
-        init();
     });
-} else {
-    init();
 }
+
+init();

@@ -178,7 +178,7 @@ function onReduce() {
 }
 
 function onViewSource() {
-    var w = openNewContent('assets/source.html');
+    openNewContent('assets/source.html');
 }
 
 function onOptions() {

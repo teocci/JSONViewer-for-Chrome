@@ -25,7 +25,7 @@ function initOptions() {
     document.getElementById('open-editor').addEventListener(
         'click',
         function () {
-            location.href = 'csseditor.html';
+            location.href = 'css-editor.html';
         },
         false
     );
