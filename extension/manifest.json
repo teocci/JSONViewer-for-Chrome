@@ -11,6 +11,7 @@
     "48": "assets/images/jsonview48.png",
     "128": "assets/images/jsonview128.png"
   },
+  "options_page": "assets/options.html",
   "background": {
     "scripts": [
       "background.js"
