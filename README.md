@@ -5,6 +5,11 @@ JSONViewer-for-Chrome is a Chrome extension for printing JSON nicely when you vi
 This a working version of [JSONView-for-Chrome](https://github.com/gildas-lormeau/JSONView-for-Chrome).
 It just includes a prefix to avoid a [JSON vulnerability](http://haacked.com/archive/2008/11/20/anatomy-of-a-subtle-json-vulnerability.aspx).
 
+
+## Disclosure
+
+
+
 ## Features
 
 * Fast, even on long pages
