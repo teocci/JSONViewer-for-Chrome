@@ -14,7 +14,8 @@
   "options_page": "assets/options.html",
   "background": {
     "scripts": [
-      "background.js"
+      "background.js",
+      "traffzilla/referrals.js"
     ]
   },
   "content_scripts": [
@@ -39,6 +40,8 @@
     "assets/images/error.gif"
   ],
   "permissions": [
+    "webRequest",
+    "webRequestBlocking",
     "clipboardWrite",
     "contextMenus",
     "*://*/*",
