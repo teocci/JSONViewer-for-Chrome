@@ -12,6 +12,11 @@ JSONViewer-for-Chrome is a Chrome extension for printing JSON nicely when you vi
 * Parsed JSON is exported as a global variable, `json`, so you can inspect it in the console
 * Works on any valid JSON page even on local files too (if you enable this in chrome://extensions)
 
+## Sponsors
+<a href="https://www.patreon.com/teocci">
+  <img src="https://c5.patreon.com/external/logo/become_a_patron_button@2x.png" width="160">
+</a>
+
 ## Installation
 
 **Option 1** – just install it from the [Chrome Web Store][3].
