@@ -13,7 +13,8 @@ function htmlEncode(t) {
         .replace(/"/g, '&quot;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
-        .replace(/ /g, '&nbsp;');
+        .replace(/ /g, '&nbsp;')
+        .replace(/\n/g, '<br>');
 }
 
 function decorateWithSpan(value, className) {
