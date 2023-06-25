@@ -1,11 +1,11 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "JSON Viewer",
   "short_name": "JSONViewer",
   "version": "0.8.17",
   "description": "Validates and makes JSON documents easy to read. Open source.",
   "homepage_url": "https://github.com/teocci/JSONView-for-Chrome",
-  "minimum_chrome_version": "21",
+  "minimum_chrome_version": "88",
   "icons": {
     "16": "assets/images/jsonview16.png",
     "48": "assets/images/jsonview48.png",
@@ -13,9 +13,8 @@
   },
   "options_page": "assets/options.html",
   "background": {
-    "scripts": [
-      "background.js"
-    ]
+    "service_worker": "background.js",
+    "type": "module"
   },
   "content_scripts": [
     {
@@ -30,19 +29,31 @@
     }
   ],
   "web_accessible_resources": [
-    "assets/options.html",
-    "assets/source.html",
-    "assets/css-editor.html",
-    "assets/css/jsonview.css",
-    "assets/css/jsonview-core.css",
-    "assets/css/content-error.css",
-    "assets/images/options.png",
-    "assets/images/close.png",
-    "assets/images/error.gif"
+    {
+      "resources": [
+        "assets/options.html",
+        "assets/source.html",
+        "assets/css-editor.html",
+        "assets/css/jsonview.css",
+        "assets/css/jsonview-core.css",
+        "assets/css/content-error.css",
+        "assets/images/options.png",
+        "assets/images/close.png",
+        "assets/images/error.gif"
+      ],
+      "matches": [
+        "*://*/*"
+      ]
+    }
   ],
   "permissions": [
     "clipboardWrite",
+    "scripting",
+    "activeTab",
     "contextMenus",
+    "storage"
+  ],
+  "host_permissions": [
     "*://*/*",
     "<all_urls>"
   ]

@@ -1,145 +1,150 @@
-var path,
+import './js/workerFormatter.js'
+
+let options, theme, path,
     value,
     copyPathMenuEntryId,
     copyValueMenuEntryId,
-    rawData;
+    rawData
 
 function getDefaultTheme(callback) {
-    var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState == 4)
-            callback(xhr.responseText);
-    };
-    xhr.open('GET', 'assets/css/jsonview.css', true);
-    xhr.send(null);
+    fetch('assets/css/jsonview.css')
+        .then(response => {
+            if (response.ok) return response.text()
+            else throw new Error('Failed to fetch default theme.')
+        })
+        .then(text => {
+            callback(text)
+        })
+        .catch(error => {
+            console.error(error)
+        })
 }
 
 function copy(value) {
-    var selElement,
-        selRange,
-        selection;
-
-    selElement = document.createElement('span');
-    selRange = document.createRange();
-    selElement.innerText = value;
-    document.body.appendChild(selElement);
-    selRange.selectNodeContents(selElement);
-    selection = window.getSelection();
-    selection.removeAllRanges();
-    selection.addRange(selRange);
-    document.execCommand('Copy');
-    document.body.removeChild(selElement);
+    if (value) return
+    navigator.clipboard.writeText(value)
+        .then(() => {
+            console.log('Text copied to clipboard')
+        })
+        .catch((error) => {
+            console.error('Error copying text to clipboard:', error)
+        })
 }
 
-function refreshMenuEntry() {
-    var options = localStorage.options ? JSON.parse(localStorage.options) : {};
+function onMenuClick(info) {
+    switch (info.menuItemId) {
+        case 'copy-path-cm':
+            // Radio item function
+            copy(path)
+            break;
+        case 'copy-value-cm':
+            // Checkbox item function
+            copy(value)
+            break;
+        default:
+            // Standard context menu item function
+            console.log('Standard context menu item clicked.');
+    }
+}
+
+const refreshMenuEntry = () => {
+    chrome.contextMenus.onClicked.addListener(onMenuClick);
+
     if (options.addContextMenu && !copyPathMenuEntryId) {
         copyPathMenuEntryId = chrome.contextMenus.create({
+            id: 'copy-path-cm',
             title: 'Copy path',
             contexts: ['page', 'link'],
-            onclick: function (info, tab) {
-                copy(path);
-            }
-        });
+        })
         copyValueMenuEntryId = chrome.contextMenus.create({
-            title: "Copy value",
+            id: 'copy-value-cm',
+            title: 'Copy value',
             contexts: ['page', 'link'],
-            onclick: function (info, tab) {
-                copy(value);
-            }
-        });
+        })
     }
 
     if (!options.addContextMenu && copyPathMenuEntryId) {
-        chrome.contextMenus.remove(copyPathMenuEntryId);
-        chrome.contextMenus.remove(copyValueMenuEntryId);
-        copyPathMenuEntryId = null;
+        chrome.contextMenus.remove(copyPathMenuEntryId)
+        chrome.contextMenus.remove(copyValueMenuEntryId)
+        copyPathMenuEntryId = null
     }
 }
 
-function getRawDataURL() {
-    chrome.runtime.onConnect.addListener(function (port) {
+const getRawDataURL = () => {
+    chrome.runtime.onConnect.addListener(port => {
         port.postMessage({
             loadRawData: true,
             rawData: rawData
-        });
-    });
+        })
+    })
 }
 
-function init() {
-    chrome.runtime.onConnect.addListener(function (port) {
-        port.onMessage.addListener(function (msg) {
-            var workerFormatter,
-                workerJSONLint,
-                json = msg.json;
+const init = () => {
+    chrome.runtime.onConnect.addListener(async port => {
+        console.log('Connected to port:', port.name)
 
-            function onWorkerJSONLintMessage(event) {
-                var message = JSON.parse(event.data);
-                workerJSONLint.removeEventListener('message', onWorkerJSONLintMessage, false);
-                workerJSONLint.terminate();
+        options = await chrome.storage.local.get('options')
+        if (options.addContextMenu == null) {
+            options.addContextMenu = true
+            await chrome.storage.local.set({options})
+        }
+
+        theme = await chrome.storage.local.get('theme')
+        if (theme == null) {
+            getDefaultTheme(async theme => {
+                await chrome.storage.local.set({theme})
+            })
+        }
+
+        port.onMessage.addListener(msg => {
+            const json = msg.json
+            let workerFormatter, workerJSONLint
+
+            const onWorkerJSONLintMessage = e => {
+                const message = JSON.parse(e.data)
+                workerJSONLint.removeEventListener('message', onWorkerJSONLintMessage, false)
+                workerJSONLint.terminate()
                 port.postMessage({
                     onGetError: true,
                     error: message.error,
                     loc: message.loc,
                     offset: msg.offset
-                });
+                })
             }
 
-            function onWorkerFormatterMessage(event) {
-                var message = event.data;
-                workerFormatter.removeEventListener('message', onWorkerFormatterMessage, false);
-                workerFormatter.terminate();
+            const onWorkerFormatterMessage = e => {
+                const message = e.data
+                workerFormatter.removeEventListener('message', onWorkerFormatterMessage, false)
+                workerFormatter.terminate()
                 if (message.html)
                     port.postMessage({
                         onJsonToHTML: true,
                         html: message.html,
-                        theme: localStorage.theme
-                    });
+                        theme: theme
+                    })
                 if (message.error) {
-                    workerJSONLint = new Worker('js/workerJSONLint.js');
-                    workerJSONLint.addEventListener('message', onWorkerJSONLintMessage, false);
-                    workerJSONLint.postMessage(json);
+                    workerJSONLint = new Worker('js/workerJSONLint.js')
+                    workerJSONLint.addEventListener('message', onWorkerJSONLintMessage, false)
+                    workerJSONLint.postMessage(json)
                 }
             }
+            switch (true) {
+                case msg.init:
+                    refreshMenuEntry()
+                    rawData = msg.rawData
+                    port.postMessage({
+                        onInit: true,
+                        options: options ?? {}
+                    })
+                    break
 
-            if (msg.init) {
-                rawData = msg.rawData;
-                port.postMessage({
-                    onInit: true,
-                    options: localStorage.options ? JSON.parse(localStorage.options) : {}
-                });
+                case msg.copyPropertyPath:
+                    path = msg.path
+                    value = msg.value
+                    break
             }
-
-            if (msg.copyPropertyPath) {
-                path = msg.path;
-                value = msg.value;
-            }
-
-            if (msg.jsonToHTML) {
-                workerFormatter = new Worker('js/workerFormatter.js');
-                workerFormatter.addEventListener('message', onWorkerFormatterMessage, false);
-                workerFormatter.postMessage({
-                    json: json,
-                    fnName: msg.fnName
-                });
-            }
-        });
-    });
-    refreshMenuEntry();
+        })
+    })
 }
 
-var options = {};
-if (localStorage.options)
-    options = JSON.parse(localStorage.options);
-if (typeof options.addContextMenu == 'undefined') {
-    options.addContextMenu = true;
-    localStorage.options = JSON.stringify(options);
-}
-
-if (!localStorage.theme) {
-    getDefaultTheme(function (theme) {
-        localStorage.theme = theme;
-    });
-}
-
-init();
+init()
