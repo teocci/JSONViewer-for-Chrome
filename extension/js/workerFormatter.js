@@ -24,10 +24,10 @@ function decorateWithSpan(value, className) {
 }
 
 function valueToHTML(value) {
-    const valueType = typeof value
+    const type = value === null ? 'null' : typeof value
     let output = ''
 
-    switch (valueType) {
+    switch (type) {
         case 'object':
             output += value && value.constructor === Array ? arrayToHTML(value) : objectToHTML(value)
 
@@ -71,28 +71,28 @@ function valueToHTML(value) {
             break
 
         default:
-            output += decorateWithSpan(valueType, 'type-other')
+            output += decorateWithSpan(type, 'type-other')
             break
     }
 
-    if (value == null) output += decorateWithSpan('null', 'type-null')
-    else if (value && value.constructor === Array)
-        output += arrayToHTML(value)
-    else if (valueType === 'object') {
-        output += objectToHTML(value)
-    } else if (valueType === 'number') {
-        output += decorateWithSpan(value, 'type-number')
-    } else if (valueType === 'string') {
-        if (/^(http|https):\/\/[^\s]+$/.test(value)) {
-            output += decorateWithSpan('"', 'type-string') +
-                '<a target="_blank" href="' + value + '">' + htmlEncode(value) + '</a>' +
-                decorateWithSpan('"', 'type-string')
-        } else {
-            output += decorateWithSpan('"' + value + '"', 'type-string')
-        }
-    } else if (valueType === 'boolean') {
-        output += decorateWithSpan(value, 'type-boolean')
-    }
+    // if (value == null) output += decorateWithSpan('null', 'type-null')
+    // else if (value && value.constructor === Array)
+    //     output += arrayToHTML(value)
+    // else if (type === 'object') {
+    //     output += objectToHTML(value)
+    // } else if (type === 'number') {
+    //     output += decorateWithSpan(value, 'type-number')
+    // } else if (type === 'string') {
+    //     if (/^(http|https):\/\/[^\s]+$/.test(value)) {
+    //         output += decorateWithSpan('"', 'type-string') +
+    //             '<a target="_blank" href="' + value + '">' + htmlEncode(value) + '</a>' +
+    //             decorateWithSpan('"', 'type-string')
+    //     } else {
+    //         output += decorateWithSpan('"' + value + '"', 'type-string')
+    //     }
+    // } else if (type === 'boolean') {
+    //     output += decorateWithSpan(value, 'type-boolean')
+    // }
 
     return output
 }
@@ -128,6 +128,7 @@ function objectToHTML(json) {
         output += '<li><div class="hoverable">'
         output += `<span class="property">${htmlEncode(key)}</span>: ${valueToHTML(json[key])}${addComma(index, length)}`
         output += '</div></li>'
+        index++
     }
     output += '</ul>}'
     if (!hasContents) return '{ }'
@@ -139,28 +140,39 @@ function jsonToHTML(json, fnName) {
     let output = fnName ? `<div class="callback-function">${fnName}(</div>` : ''
     output += `<div id="json">${valueToHTML(json)}</div>`
 
-    return `${output}${fnName ? '<div className="callback-function">)</div>' : ''}`
+    return `${output}${fnName ? '<div class="callback-function">)</div>' : ''}`
 }
 
-chrome.runtime.onConnect.addListener(function(port) {
-    console.log(`Formatter[port]: ${port.name}`)
+const initContentChannel = async port => {
     port.onMessage.addListener(msg => {
-        console.log({msg})
-        if (!msg.jsonToHTML) return
-        console.log('formatter 1')
+        console.log('Formatter[msg][type]', msg.type)
+
+        const type = msg.type
+
+        if (type !== 'json-to-html') return
 
         try {
-            console.log('formatter 2')
             const object = JSON.parse(msg.json)
+            const html = jsonToHTML(object, msg.fnName) ?? null
+            if (!html) return
             port.postMessage({
-                onJsonToHTML: true,
-                html: jsonToHTML(object, msg.fnName)
+                type: 'on-json-formatted',
+                target: 'content',
+                html,
             })
-
-            console.log('formatter 3')
         } catch (e) {
-            port.postMessage({error: true})
+            console.error(e)
+            port.postMessage({
+                type: 'on-json-formatted',
+                target: 'content',
+                error: true,
+            })
         }
     })
-})
+}
 
+chrome.runtime.onConnect.addListener(async port => {
+    console.log(`Formatter[port][name]: ${port.name}`)
+
+    if (port.name === 'content-channel') await initContentChannel(port)
+})

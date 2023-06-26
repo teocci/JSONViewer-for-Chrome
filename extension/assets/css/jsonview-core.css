@@ -5,8 +5,8 @@ body {
 
 ul {
     list-style-type: none;
-    padding: 0px;
-    margin: 0px 0px 0px 26px;
+    padding: 0;
+    margin: 0 0 0 26px;
 }
 
 li {
@@ -51,12 +51,12 @@ li {
 
 .status {
     position: fixed;
-    left: 0px;
-    bottom: 0px;
+    left: 0;
+    bottom: 0;
     min-width: 628px;
     border: 1px solid #c2c2c2;
-    border-bottom-width: 0px;
-    border-left-width: 0px;
+    border-bottom-width: 0;
+    border-left-width: 0;
     border-top-right-radius: 4px;
     height: 16px;
     padding: 2px 7px 2px 4px;
@@ -81,9 +81,9 @@ li {
     opacity: .25;
     background-color: #d2d2f6;
     position: fixed;
-    right: 0px;
-    top: 0px;
-    border: 0px solid #c2c2c2;
+    right: 0;
+    top: 0;
+    border: 0 solid #c2c2c2;
     border-bottom-width: 1px;
     border-left-width: 1px;
     border-bottom-left-radius: 4px;

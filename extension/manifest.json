@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "JSON Viewer",
   "short_name": "JSONViewer",
-  "version": "0.8.17",
+  "version": "1.0.1",
   "description": "Validates and makes JSON documents easy to read. Open source.",
   "homepage_url": "https://github.com/teocci/JSONView-for-Chrome",
   "minimum_chrome_version": "88",

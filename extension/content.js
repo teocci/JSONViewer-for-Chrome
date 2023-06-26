@@ -1,6 +1,17 @@
 const sysGetURL = chrome.runtime.getURL
-const port = chrome.runtime.connect({name: 'JSON Viewer'})
+const port = chrome.runtime.connect({name: 'content-channel'})
 const errorLocs = []
+const hashID = (size = 6) => {
+    const MASK = 0x3d
+    const LETTERS = 'abcdefghijklmnopqrstuvwxyz'
+    const NUMBERS = '1234567890'
+    const charset = `${NUMBERS}${LETTERS}${LETTERS.toUpperCase()}_-`.split('')
+
+    const bytes = new Uint8Array(size)
+    crypto.getRandomValues(bytes)
+
+    return bytes.reduce((acc, byte) => `${acc}${charset[byte & MASK]}`, '')
+}
 
 let collapsers,
     options,
@@ -72,14 +83,14 @@ function displayError(error, loc, offset) {
 }
 
 function displayUI(theme, html) {
-    let $statusElement,
-        $toolboxElement,
-        $expandElement,
-        $reduceElement,
-        $viewSourceElement,
-        $optionsElement,
+    let $status,
+        $toolbox,
+        $expand,
+        $reduce,
+        $viewSource,
+        $options,
         content = '',
-        $copyPathElement
+        $copyPath
 
     content += `<link rel="stylesheet" type="text/css" href="${sysGetURL('assets/css/jsonview-core.css')}">`
     content += `<style>${theme}</style>`
@@ -88,95 +99,123 @@ function displayUI(theme, html) {
 
     collapsers = document.querySelectorAll('#json .collapsible .collapsible')
 
-    $copyPathElement = document.createElement('div')
-    $copyPathElement.className = 'copy-path'
+    for (const $collapser of collapsers) {
+        const $parent = $collapser.parentElement
+        const id = hashID()
+        $parent.id = id
+        $parent.dataset.status = 'expanded'
+        $parent.onclick = e => {
+            onToggle(e, id, $collapser)
+        }
+        $parent.onmouseover = e => {
+            onMouseMove(e)
+        }
+    }
 
-    $statusElement = document.createElement('div')
-    $statusElement.className = 'status'
-    $statusElement.append($copyPathElement)
-    document.body.append($statusElement)
+    $copyPath = document.createElement('div')
+    $copyPath.className = 'copy-path'
 
-    $toolboxElement = document.createElement('div')
-    $toolboxElement.className = 'toolbox'
+    $status = document.createElement('div')
+    $status.className = 'status'
+    $status.append($copyPath)
+    document.body.append($status)
 
-    $expandElement = document.createElement('button')
-    $expandElement.id = 'expand_all'
-    $expandElement.conentText = '+'
+    $toolbox = document.createElement('div')
+    $toolbox.className = 'toolbox'
 
-    $reduceElement = document.createElement('button')
-    $reduceElement.id = 'reduce_all'
-    $reduceElement.conentText = '-'
+    $expand = document.createElement('button')
+    $expand.id = 'expand_all'
+    $expand.textContent = '+'
 
-    $viewSourceElement = document.createElement('button')
-    $viewSourceElement.id = 'view_source'
-    $viewSourceElement.conentText = 'View source'
-    // $viewSourceElement.target = '_blank'
-    // $viewSourceElement.href = `view-source: ${location.href}`
+    $reduce = document.createElement('button')
+    $reduce.id = 'reduce_all'
+    $reduce.textContent = '-'
 
-    $optionsElement = document.createElement('img')
-    $optionsElement.title = 'options'
-    $optionsElement.src = sysGetURL('assets/images/options.png')
+    $viewSource = document.createElement('button')
+    $viewSource.id = 'view_source'
+    $viewSource.textContent = 'View source'
+    // $viewSource.target = '_blank'
+    // $viewSource.href = `view-source: ${location.href}`
 
-    $toolboxElement.append($expandElement)
-    $toolboxElement.append($reduceElement)
-    $toolboxElement.append($viewSourceElement)
-    $toolboxElement.append($optionsElement)
+    $options = document.createElement('img')
+    $options.title = 'options'
+    $options.src = sysGetURL('assets/images/options.png')
 
-    document.body.append($toolboxElement)
-    document.body.onclick = onToggle
-    document.body.onmouseover = onMouseMove
+    $toolbox.append($expand)
+    $toolbox.append($reduce)
+    $toolbox.append($viewSource)
+    $toolbox.append($options)
+
+    document.body.append($toolbox)
+    // document.body.onclick = onToggle
+    // document.body.onmouseover = onMouseMove
     document.body.onclick = onMouseClick
     document.body.oncontextmenu = onContextMenu
 
-    $expandElement.onclick = onExpand
-    $reduceElement.onclick = onReduce
+    $expand.onclick = onExpand
+    $reduce.onclick = onReduce
 
-    $viewSourceElement.onclick = onViewSource
-    $optionsElement.onclick = onOptions
+    $viewSource.onclick = onViewSource
+    $options.onclick = onOptions
 
-    $copyPathElement.onclick = () => {
+    $copyPath.onclick = () => {
         port.postMessage({
-            copyPropertyPath: true,
-            path: $statusElement.innerText
+            type: 'copy-property',
+            target: 'background',
+            path: $status.innerText
         })
     }
 }
 
-function onToggle(e) {
-    const $target = e.target
-    let $collapsed, $ellipsis
-
-    if (e.target.className === 'collapser') {
-        $ellipsis = $target.parentElement.querySelector('.ellipsis')
-        $collapsed = $target.parentElement.querySelector('.collapsible')
-        const $parent = $collapsed.parentElement
-        if ($parent.classList.contains('collapsed')) {
-            $parent.classList.remove('collapsed')
-        } else {
-            $parent.classList.add('collapsed')
-            $ellipsis.setAttribute('data-value', `${$collapsed.childElementCount}`)
+function onToggle(e, id, $collapser) {
+    e.preventDefault()
+    e.stopPropagation()
+    const $parent = $collapser.parentElement
+    console.log('onToggle', {$collapser, $parent})
+    if ($parent.id === id) {
+        switch ($parent.dataset.status) {
+            case 'expanded':
+                console.log('onToggle-expanded')
+                reduce($collapser)
+                break
+            case 'reduced':
+                expand($collapser)
+                break
+            default:
+                $parent.dataset.status = 'expanded'
+                reduce($collapser)
         }
     }
 }
 
 function onExpand() {
     for (const $collapsed of collapsers) {
-        const $parent = $collapsed.parentElement
-        if ($parent.classList.contains('collapsed')) {
-            $parent.classList.remove('collapsed')
-        }
+        expand($collapsed)
     }
+}
+
+function expand($collapsed) {
+    const $parent = $collapsed.parentElement
+    if ($parent.dataset.status !== 'reduced') return
+
+    $parent.classList.remove('collapsed')
+    $parent.dataset.status = 'expanded'
 }
 
 function onReduce() {
     for (const $collapsed of collapsers) {
-        const $parent = $collapsed.parentElement
-        if ($parent.classList.contains('collapsed')) continue
-
-        const $ellipsis = $parent.querySelector('.ellipsis')
-        if ($ellipsis) $ellipsis.setAttribute('data-value', `${$collapsed.childElementCount}`)
-        $parent.classList.add('collapsed')
+        reduce($collapsed)
     }
+}
+
+function reduce($collapsed) {
+    const $parent = $collapsed.parentElement
+    if ($parent.dataset.status !== 'expanded') return
+
+    const $ellipsis = $parent.querySelector('.ellipsis')
+    if ($ellipsis) $ellipsis.dataset.value = `${$collapsed.childElementCount}`
+    $parent.classList.add('collapsed')
+    $parent.dataset.status = 'reduced'
 }
 
 function onViewSource() {
@@ -194,20 +233,24 @@ function openNewContent(path) {
 function getParentLI($element) {
     if ($element && $element.tagName === 'LI') return $element
 
-    while ($element && $element.tagName !== 'LI') $element = $element.parentElement
+    while ($element && $element.tagName !== 'LI') {
+        $element = $element.parentElement
+    }
+
+    return $element
 }
 
 const onMouseMove = (e => {
-    const $status = document.querySelector('.status')
-
     let $hoveredLI
 
     function onMouseOut() {
         if ($hoveredLI == null) return
 
+        const $status = document.querySelector('.status')
+
         $hoveredLI.firstElementChild.classList.remove('hovered')
         $hoveredLI = null
-        $status.conentText = ''
+        $status.textContent = ''
     }
 
     return e => {
@@ -233,6 +276,7 @@ const onMouseMove = (e => {
 
         if (str.charAt(0) === '.') str = str.substring(1)
 
+        const $status = document.querySelector('.status')
         $status.innerText = str
     }
 })()
@@ -245,19 +289,33 @@ function onMouseClick(e) {
 }
 
 function onContextMenu(e) {
-    let $currentLI,
-        $status,
-        value
-    $currentLI = getParentLI(e.target)
-    $status = document.querySelector('.status')
+    const $currentLI = getParentLI(e.target)
+    const $status = document.querySelector('.status')
+
+    let value
+
     if ($currentLI) {
-        if (Array.isArray(jsonObject)) value = eval(`(jsonObject.${$status.innerText})`)
-        else value = eval(`(jsonObject.${$status.innerText})`)
+        const path = $status.innerText
+        const segments = path.split('.')
+        let target = jsonObject
+
+        for (const segment of segments) {
+            target = target[segments]
+            if (typeof target === 'undefined') {
+                value = undefined
+                break
+            }
+        }
+
+        value = typeof target === 'object' ? JSON.stringify(target) : target
+
+        console.log('onContextMenu', {value})
 
         port.postMessage({
-            copyPropertyPath: true,
-            path: $status.innerText,
-            value: typeof value === 'object' ? JSON.stringify(value) : value
+            type: 'copy-property',
+            target: 'background',
+            path,
+            value
         })
     }
 }
@@ -294,12 +352,14 @@ function processData(data) {
         console.log('formatToHTML 1')
 
         port.postMessage({
-            jsonToHTML: true,
+            type: 'json-to-html',
+            target: 'background',
             json: jsonText,
             fnName: fnName,
             offset: offset
         })
-        console.log('formatToHTML 2',{fnName, offset})
+
+        console.log('formatToHTML 2', {fnName, offset})
 
         try {
             jsonObject = JSON.parse(jsonText)
@@ -337,29 +397,50 @@ function processData(data) {
 }
 
 function init(data) {
+    const target = 'background'
     port.onMessage.addListener(function (msg) {
-        if (msg.onInit) {
-            options = msg.options
-            processData(data)
-        }
-        if (msg.onJsonToHTML) {
-            if (msg.html) {
-                displayUI(msg.theme, msg.html)
-            } else if (msg.json) {
-                port.postMessage({
-                    getError: true,
-                    json: json,
-                    fnName: fnName
+        console.log('Content[msg][type]', msg.type)
+        const type = msg.type
+
+        switch (type) {
+            case 'on-init':
+                options = msg.options
+                processData(data)
+                break
+
+            case 'on-json-to-html':
+                if (msg.html) {
+                    displayUI(msg.theme, msg.html)
+                } else if (msg.json) {
+                    port.postMessage({
+                        type: 'error',
+                        target,
+                        json: msg.json,
+                        fnName: msg.fnName
+                    })
+                }
+                break
+
+            case 'on-json-formatted':
+                if (msg.html) port.postMessage({
+                    type: 'formatted-to-html',
+                    target,
+                    html: msg.html,
                 })
-            }
-        }
-        if (msg.onGetError) {
-            displayError(msg.error, msg.loc, msg.offset)
+                break
+
+            case 'on-error':
+                displayError(msg.error, msg.loc, msg.offset)
+                break
+
+            default:
+                console.log(`${type} not supported`)
         }
     })
 
     port.postMessage({
-        init: true,
+        type: 'init',
+        target,
         rawData: rawData.innerHTML
     })
 }

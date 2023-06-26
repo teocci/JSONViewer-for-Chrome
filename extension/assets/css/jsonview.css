@@ -48,6 +48,7 @@ body {
 .hoverable {
     padding: 1px 2px;
     border-radius: 2px;
+    width: 100%;
 }
 
 .hovered {

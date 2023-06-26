@@ -1,24 +1,18 @@
-var port = chrome.runtime.connect();
-var code = document.getElementById('raw_data');
+const port = chrome.runtime.connect({name: 'source-channel'})
+const $code = document.getElementById('raw_data')
 
-function initSource() {
-    var bgPage = chrome.extension.getBackgroundPage();
-    bgPage.getRawDataURL();
-
+function load() {
     port.postMessage({
-        onSourceInit: true
-    });
+        type: 'load-raw-data',
+        target: 'background',
+    })
 
-    port.onMessage.addListener(function (msg) {
-        if (msg.loadRawData) {
-            var rawData = msg.rawData;
-            if (rawData) {
-                if (code) {
-                    code.innerHTML = JSON.stringify(JSON.parse(rawData));
-                }
-            }
-        }
-    });
+    port.onMessage.addListener(msg => {
+        if (msg.type !== 'on-load-raw-data') return
+        if (!msg.rawData || !$code) return
+
+        $code.innerHTML = JSON.stringify(JSON.parse(msg.rawData))
+    })
 }
 
-addEventListener('load', initSource, false);
+document.addEventListener('DOMContentLoaded', load)
