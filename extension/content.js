@@ -457,7 +457,6 @@ function stripJsonPrefix(text) {
 }
 
 function load() {
-    console.log('JSON Viewer load start')
     if (document.body &&
         (
             document.body.firstElementChild &&
@@ -471,7 +470,6 @@ function load() {
         console.log({rawData: data})
         if (data) init(data)
     }
-    console.log('JSON Viewer load end')
 }
 
 document.addEventListener('DOMContentLoaded', load)
