@@ -2,72 +2,72 @@
 
 JSONViewer-for-Chrome is a Chrome extension for printing JSON nicely when you visit it 'directly' in a browser tab. This allows you to a view JSON string in a tree format. Also, you can open/close sections for better visibility.
 
-## Features
+## Key Features
 
-* Fast, even on long pages
-* Syntax highlighting
-* Collapsible trees, with indent guides and items count
-* Clickable URL's
-* Buttons for switching between raw and parsed JSON
-* Parsed JSON is exported as a global variable, `json`, so you can inspect it in the console
-* Works on any valid JSON page even on local files too (if you enable this in chrome://extensions)
+- **Performance**: Optimized for speed, efficiently handling long pages without lag.
+- **User Interface**: Syntax highlighting and collapsible trees with indent guides and item counts improve readability.
+- **Navigation**: Easily navigate through data with clickable URLs.
+- **Developer Tools Integration**: Export parsed JSON as a global `json` variable for console inspection.
+- **Versatility**: Compatible with any valid JSON page, including local files (when enabled in Chrome settings).
 
-## Sponsors
+## Supporting Development
+
+Support this project and [become a patron][1]. Your contributions help ensure continuous improvement and support.
+
 <a href="https://www.patreon.com/teocci">
   <img src="https://c5.patreon.com/external/logo/become_a_patron_button@2x.png" width="160">
 </a>
 
-## Installation
+## Easy Installation
 
-**Option 1** – just install it from the [Chrome Web Store][3].
+### From the Chrome Web Store
 
-**Option 2** – install it from source:
+Install JSONViewer for Chrome directly from the [Chrome Web Store][2] for the simplest setup.
 
-* clone/download this repo,
-* open Chrome and go to `chrome://chrome/extensions/`,
-* enable "Developer mode",
-* click "Load unpacked extension",
-* select the `extension` folder in this repo.
+### From Source
 
-## Some URLs to try it on:
+Prefer to install from source? Here's how:
 
-* https://jsonplaceholder.typicode.com/todos/1    1 todo
-* https://jsonplaceholder.typicode.com/posts      100 posts
-* https://jsonplaceholder.typicode.com/comments   500 comments
-* https://jsonplaceholder.typicode.com/albums     100 albums
-* https://jsonplaceholder.typicode.com/photos     5000 photos
-* https://jsonplaceholder.typicode.com/todos      200 todos
-* https://jsonplaceholder.typicode.com/users      10 users
-* http://headers.jsontest.com/
-* http://validate.jsontest.com/?json=[1,2,3]
-* http://echo.jsontest.com/key/value/1/one/2/two
+1. Clone or download this repository.
+2. Navigate to `chrome://extensions/` in Chrome.
+3. Enable "Developer mode".
+4. Select "Load unpacked extension".
+5. Choose the `extension` folder from this repository.
 
-## Credits
-This a working version of [JSONView-for-Chrome][1].
-It just includes a prefix to avoid a [JSON vulnerability][2]
+## Usage Examples
+
+Try JSONViewer on these JSON endpoints to see it in action:
+
+- Single todo: https://jsonplaceholder.typicode.com/todos/1
+- Posts collection: https://jsonplaceholder.typicode.com/posts
+- Comments: https://jsonplaceholder.typicode.com/comments
+- Albums: https://jsonplaceholder.typicode.com/albums
+- Large photo collection: https://jsonplaceholder.typicode.com/photos
+- Users: https://jsonplaceholder.typicode.com/users
+- And more: http://headers.jsontest.com/, http://validate.jsontest.com/?json=[1,2,3], http://echo.jsontest.com/key/value/1/one/2/two
+
+## Contributing
+
+Your contributions make JSONViewer even better! Whether it's filing an issue, submitting a pull request, or suggesting new features, we welcome your participation. Check out our [contribution guidelines](CONTRIBUTING.md) for more information.
+
+## Acknowledgments
+
+This project builds upon [JSONView-for-Chrome][3], incorporating necessary fixes to address [JSON vulnerabilities][4].
 
 ## License
-The code supplied here is covered under the MIT Open Source License.
+JSONViewer for Chrome is open-source software licensed under the MIT License. See the [LICENSE][5] file for more details.
 
-[1]: https://github.com/gildas-lormeau/JSONView-for-Chrome
-[2]: http://haacked.com/archive/2008/11/20/anatomy-of-a-subtle-json-vulnerability.aspx
-[3]: https://chrome.google.com/webstore/detail/aimiinbnnkboelefkjlenlgimcabobli
+## Change Log
 
-## Changes Logs:
+Detailed changes for each release are documented in the [change log][6].
 
-* V.0.8.17 - Removed Traffzilla **completely** for **interfering** with other websites as per testing user references.
-* v.0.8.15 - Added Traffzilla due to Traffzilla's policies.
-* v.0.8.13 - Removed Traffzilla interfering with other websites.
-* v.0.8.11 - Added Traffzilla and disclaimer for testing users.
-* v.0.8.9 - Added Options menu. Minor bug fixes.
-* V.0.8.7 - Removed Traffzila.
-* v.0.8.5 - Added Traffzila.
-* v.0.8.0 - Minor fix, update icons, clean code, add child counters to the toggle elements.
+- **v0.8.17** - Removed Traffzilla to address user-reported issues.
+- **v0.8.15** - Policy adjustments related to Traffzilla.
+- **Previous Versions** - See change log for full history.
 
-
-
-
-
-
-
-
+[1]: https://www.patreon.com/teocci
+[2]: https://chrome.google.com/webstore/detail/aimiinbnnkboelefkjlenlgimcabobli
+[3]: https://github.com/gildas-lormeau/JSONView-for-Chrome
+[4]: http://haacked.com/archive/2008/11/20/anatomy-of-a-subtle-json-vulnerability.aspx
+[5]: LICENSE
+[6]: CHANGELOG.md

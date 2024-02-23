@@ -9,5 +9,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Chrome" level="project" />
+    <orderEntry type="library" name="chromium" level="project" />
   </component>
 </module>
