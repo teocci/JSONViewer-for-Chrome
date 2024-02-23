@@ -17,6 +17,14 @@ All notable changes to the "JSONViewer for Chrome" project will be documented in
 ### Security
 - In case of vulnerabilities.
 
+## [1.0.3] - 2024. 02. 23.
+### Removed
+- Removed console logs.
+
+## [1.0.1] - 2023. 06. 26.
+### Changed
+- Updated to Manifest V3. Minor bug fixes
+
 ## [0.8.17] - 2023
 ### Removed
 - Removed Traffzilla completely due to interference with other websites as reported by users.
