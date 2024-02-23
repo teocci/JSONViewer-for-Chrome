@@ -56,7 +56,6 @@ function displayError(error, loc, offset) {
         range.setStart($pre, start)
         range.setEnd($pre, start === end - 1 ? start : end)
 
-
         $errorPosition.className = 'error-position'
         $errorPosition.id = 'error-position'
         range.surroundContents($errorPosition)
@@ -162,7 +161,7 @@ function displayUI(theme, html) {
         port.postMessage({
             type: 'copy-property',
             target: 'background',
-            path: $status.innerText
+            path: $status.innerText,
         })
     }
 }
@@ -171,11 +170,9 @@ function onToggle(e, id, $collapser) {
     e.preventDefault()
     e.stopPropagation()
     const $parent = $collapser.parentElement
-    console.log('onToggle', {$collapser, $parent})
     if ($parent.id === id) {
         switch ($parent.dataset.status) {
             case 'expanded':
-                console.log('onToggle-expanded')
                 reduce($collapser)
                 break
             case 'reduced':
@@ -309,13 +306,13 @@ function onContextMenu(e) {
 
         value = typeof target === 'object' ? JSON.stringify(target) : target
 
-        console.log('onContextMenu', {value})
+        // console.log('onContextMenu', {value})
 
         port.postMessage({
             type: 'copy-property',
             target: 'background',
             path,
-            value
+            value,
         })
     }
 }
@@ -331,7 +328,7 @@ function extractData(rawText) {
 
     if (test(text)) return {
         text: rawText,
-        offset: 0
+        offset: 0,
     }
 
     tokens = text.match(/^([^\s(]*)\s*\(([\s\S]*)\)\s*;?$/)
@@ -339,7 +336,7 @@ function extractData(rawText) {
         if (test(tokens[2].trim())) return {
             fnName: tokens[1],
             text: tokens[2],
-            offset: rawText.indexOf(tokens[2])
+            offset: rawText.indexOf(tokens[2]),
         }
     }
 }
@@ -349,27 +346,22 @@ function processData(data) {
 
     const formatToHTML = (fnName, offset) => {
         if (!jsonText) return
-        console.log('formatToHTML 1')
 
         port.postMessage({
             type: 'json-to-html',
             target: 'background',
             json: jsonText,
             fnName: fnName,
-            offset: offset
+            offset: offset,
         })
-
-        console.log('formatToHTML 2', {fnName, offset})
 
         try {
             jsonObject = JSON.parse(jsonText)
-            console.log({jsonObject})
         } catch (e) {
         }
     }
 
     if (window === top || options.injectInFrame) {
-        console.log({options})
         if (!options.safeMethod) {
             if (data == null) return
 
@@ -416,7 +408,7 @@ function init(data) {
                         type: 'error',
                         target,
                         json: msg.json,
-                        fnName: msg.fnName
+                        fnName: msg.fnName,
                     })
                 }
                 break
@@ -441,7 +433,7 @@ function init(data) {
     port.postMessage({
         type: 'init',
         target,
-        rawData: rawData.innerHTML
+        rawData: rawData.innerHTML,
     })
 }
 
@@ -457,7 +449,6 @@ function stripJsonPrefix(text) {
 }
 
 function load() {
-    console.log('JSON Viewer load start')
     if (document.body &&
         (
             document.body.firstElementChild &&
@@ -468,10 +459,8 @@ function load() {
         rawData = document.body.children.length ? document.body.firstElementChild : document.body
 
         const data = extractData(stripJsonPrefix(rawData.innerText))
-        console.log({rawData: data})
         if (data) init(data)
     }
-    console.log('JSON Viewer load end')
 }
 
 document.addEventListener('DOMContentLoaded', load)
